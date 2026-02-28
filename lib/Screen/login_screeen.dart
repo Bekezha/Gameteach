@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -77,47 +78,60 @@ class _LoginScreeenState extends State<LoginScreeen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("GameTeach"),
-        backgroundColor: const Color.fromARGB(255, 191, 88, 209),
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             const SizedBox(height: 12),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.email),
-                border: OutlineInputBorder(),
-                labelText: "Email",
+            FadeInDown(
+              child: Image.asset(
+                "assets/images/game_intro.png",
+                height: 120,
               ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                icon: Icon(Icons.lock),
-                border: OutlineInputBorder(),
-                labelText: "Құпиясөз",
+            const SizedBox(height: 24),
+            FadeInLeft(
+              child: TextField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.email),
+                  labelText: "Email",
+                ),
               ),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _isLoading ? null : loginUser,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 191, 88, 209),
+            FadeInRight(
+              child: TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.lock),
+                  labelText: "Құпиясөз",
+                ),
               ),
-              child: _isLoading
-                  ? const CircularProgressIndicator()
-                  : const Text("Кіру"),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/register');
-              },
-              child: const Text("Тіркелуге өту"),
+            const SizedBox(height: 24),
+            FadeInUp(
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : loginUser,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text("Кіру"),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            FadeInUp(
+              delay: const Duration(milliseconds: 300),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/register');
+                },
+                child: const Text("Тіркелуге өту"),
+              ),
             ),
           ],
         ),

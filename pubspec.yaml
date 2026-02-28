@@ -41,6 +41,9 @@ dependencies:
   web_socket_channel: ^2.4.0
   http: ^1.2.2
   shared_preferences: ^2.3.2
+  provider: ^6.0.5
+  google_fonts: ^8.0.2
+  animate_do: ^4.2.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +55,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  test: ^1.24.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +71,13 @@ flutter:
     - assets/images/car_drive.jpg
     - assets/images/road_bg.jpg
     - assets/images/play1.jpg
+    - assets/images/play2.jpg
+    - assets/images/play3.jpg
+    - assets/images/play5.jpg
+    - assets/images/play6.jpg
+    - assets/images/play7.jpg
+    - assets/images/play8.jpg
+    - assets/images/play9.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

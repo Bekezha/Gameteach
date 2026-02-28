@@ -8,19 +8,29 @@ import 'Game/movement.dart';
 import 'Screen/introduction.dart';
 import 'Screen/games.dart';
 import 'Screen/settings.dart';
-import 'Screen/profile.dart';
+import 'Screen/profile/profile_screen.dart';
 import 'victorina.dart';
+import 'package:provider/provider.dart';
+import 'app_settings.dart';
+import 'theme/app_theme.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ChangeNotifierProvider(create: (_) => AppSettings(), child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<AppSettings>(context);
     return MaterialApp(
       title: "Gameteach",
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: settings.themeMode,
+
+      locale: settings.locale,
+
       initialRoute: "/login",
       routes: {
         '/login': (context) => LoginScreeen(),

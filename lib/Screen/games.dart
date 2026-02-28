@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 
 class Games extends StatefulWidget {
   const Games({super.key});
@@ -26,12 +27,7 @@ class _GamesState extends State<Games> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFFF),
       appBar: AppBar(
-        title: const Text(
-          "GameTeach",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: const Color.fromARGB(255, 191, 88, 209),
-        centerTitle: true,
+        title: const Text("GameTeach"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -45,40 +41,42 @@ class _GamesState extends State<Games> {
           ),
           itemBuilder: (context, index) {
             final game = games[index];
-            return GestureDetector(
-              onTap: () {
-                // Мұнда әр ойынға жеке маршрут беруге болады
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Ойын: ${game['title']}")),
-                );
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 4,
-                color: Colors.white,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        game['image']!,
-                        height: 100,
-                        fit: BoxFit.cover,
+            return FadeInUp(
+              delay: Duration(milliseconds: 100 * (index % 5)),
+              child: GestureDetector(
+                onTap: () {
+                  // Мұнда әр ойынға жеке маршрут беруге болады
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Ойын: ${game['title']}")),
+                  );
+                },
+                child: Card(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                        child: Image.asset(
+                          game['image']!,
+                          height: 100,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      game['title']!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF6C3483),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: Text(
+                          game['title']!,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

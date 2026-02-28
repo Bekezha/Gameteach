@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreeen extends StatefulWidget {
@@ -43,92 +44,98 @@ class _HomeScreeenState extends State<HomeScreeen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Главная'),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 191, 88, 209),
+        title: const Text('Басты бет'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                "Hello, ${userName ?? 'Gamer'} 👋",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              FadeInDown(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Сәлем, ${userName ?? 'Ойыншы'} 👋",
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/introduction');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Theme.of(context).primaryColor,
+                        ),
+                        child: const Text('Қосымшамен танысу'),
+                      ),
+                    ],
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/introduction');
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 191, 88, 209),
-                ),
-                child: const Text(
-                  'Перейти ознакомление',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+              const SizedBox(height: 32),
+              FadeInUp(
+                child: Text(
+                  "Ойындар",
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Expanded(
-                    child: Column(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/connect");
-                          },
-                          icon: Image.asset(
-                            "assets/images/game1.jpg",
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const Text("Связывание"),
-                      ],
+                    child: FadeInUp(
+                      delay: const Duration(milliseconds: 100),
+                      child: _buildGameCard(
+                        context,
+                        "Байланыс",
+                        "assets/images/game1.jpg",
+                        "/connect",
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/movement');
-                          },
-                          icon: Image.asset(
-                            "assets/images/game2.jpg",
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const Text("Направление"),
-                      ],
+                    child: FadeInUp(
+                      delay: const Duration(milliseconds: 200),
+                      child: _buildGameCard(
+                        context,
+                        "Бағыт",
+                        "assets/images/game2.jpg",
+                        "/movement",
+                      ),
                     ),
                   ),
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, "/quiz");
-                          },
-                          icon: Image.asset(
-                            "assets/images/game3.jpg",
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const Text("Викторина"),
-                      ],
+                    child: FadeInUp(
+                      delay: const Duration(milliseconds: 300),
+                      child: _buildGameCard(
+                        context,
+                        "Викторина",
+                        "assets/images/game3.jpg",
+                        "/quiz",
+                      ),
                     ),
                   ),
                 ],
@@ -140,22 +147,47 @@ class _HomeScreeenState extends State<HomeScreeen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: const Color.fromARGB(255, 191, 88, 209),
-        selectedItemColor: const Color.fromARGB(255, 191, 88, 209),
-        unselectedItemColor: const Color.fromARGB(255, 191, 88, 209),
-        showSelectedLabels: true,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Главная"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Настройки",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.collections_bookmark),
-            label: "Игры",
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Профиль"),
+          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Басты бет"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings_rounded), label: "Баптаулар"),
+          BottomNavigationBarItem(icon: Icon(Icons.games_rounded), label: "Ойындар"),
+          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: "Профиль"),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGameCard(BuildContext context, String title, String imagePath, String route) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, route);
+      },
+      child: Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  imagePath,
+                  height: 60,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

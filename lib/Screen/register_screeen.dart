@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,13 +66,6 @@ class _RegisterScreeenState extends State<RegisterScreeen> {
         ).showSnackBar(const SnackBar(content: Text("Тіркелу сәтті ✅")));
 
         Navigator.pushReplacementNamed(context, '/home');
-        Future.microtask(() {
-          Navigator.pushNamed(
-            context,
-            '/profile',
-            arguments: {'name': user['name'], 'email': user['email']},
-          );
-        });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(data['message'] ?? 'Қате тіркелу')),
@@ -91,8 +85,6 @@ class _RegisterScreeenState extends State<RegisterScreeen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("GameTeach"),
-        backgroundColor: const Color.fromARGB(255, 191, 88, 209),
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -100,62 +92,74 @@ class _RegisterScreeenState extends State<RegisterScreeen> {
           child: Column(
             children: [
               const SizedBox(height: 12),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
-                  labelText: "Аты-жөні",
+              FadeInDown(
+                child: Image.asset(
+                  "assets/images/game_intro.png",
+                  height: 100,
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInLeft(
+                child: TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.person),
+                    labelText: "Аты-жөні",
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.email),
-                  border: OutlineInputBorder(),
-                  labelText: "Email",
+              FadeInRight(
+                child: TextField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.email),
+                    labelText: "Email",
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                  labelText: "Құпиясөз",
+              FadeInLeft(
+                child: TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.lock),
+                    labelText: "Құпиясөз",
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
-              TextField(
-                controller: confirmpaswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.lock_outline),
-                  border: OutlineInputBorder(),
-                  labelText: "Құпиясөзді растау",
+              FadeInRight(
+                child: TextField(
+                  controller: confirmpaswordController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.lock_outline),
+                    labelText: "Құпиясөзді растау",
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FadeInUp(
+                child: SizedBox(
+                  width: double.infinity,
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ElevatedButton(
+                          onPressed: registerUser,
+                          child: const Text("Тіркелу"),
+                        ),
                 ),
               ),
               const SizedBox(height: 16),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: registerUser,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(
-                          255,
-                          191,
-                          88,
-                          209,
-                        ),
-                      ),
-                      child: const Text("Тіркелу"),
-                    ),
-              TextButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, '/login'),
-                child: const Text("Кіруге өту"),
+              FadeInUp(
+                delay: const Duration(milliseconds: 300),
+                child: TextButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(context, '/login'),
+                  child: const Text("Кіруге өту"),
+                ),
               ),
             ],
           ),
