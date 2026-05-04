@@ -1,75 +1,41 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
-class LoginScreeen extends StatefulWidget {
-  const LoginScreeen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<LoginScreeen> createState() => _LoginScreeenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreeenState extends State<LoginScreeen> {
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
-
-  Future<void> _saveUserLocally(
-    Map<String, dynamic> user,
-    String? token,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userName', user['name'] ?? '');
-    await prefs.setString('userEmail', user['email'] ?? '');
-    if (token != null) await prefs.setString('token', token);
-  }
 
   Future<void> loginUser() async {
     setState(() => _isLoading = true);
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
 
-    final url = Uri.parse(
-      'http://localhost:5000/api/users/login',
-    ); // <- поменяй если нужно
-
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+      final success = await context.read<UserProvider>().login(email, password);
 
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        final user = data['user'] as Map<String, dynamic>;
-        final token = data['token'] as String?;
-        // Сохраняем локально — чтобы profile всегда мог взять данные
-        await _saveUserLocally(user, token);
-
-        // Надёжный переход: сначала /home, затем асинхронно открываем /profile с аргументами
+      if (success && mounted) {
         Navigator.pushReplacementNamed(context, '/home');
-
-        Future.microtask(() {
-          Navigator.pushNamed(
-            context,
-            '/profile',
-            arguments: {'name': user['name'], 'email': user['email']},
-          );
-        });
-      } else {
+      } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Ошибка входа')),
+          const SnackBar(content: Text('Ошибка входа')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Ошибка сервера: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ошибка: $e')));
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 

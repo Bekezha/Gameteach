@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
 class QuestionGame extends StatefulWidget {
   const QuestionGame({super.key});
@@ -164,6 +166,8 @@ class _QuestionGameState extends State<QuestionGame> {
       if (currentQuestion < questions.length - 1) {
         currentQuestion++;
       } else {
+        context.read<UserProvider>().updateStats(answeredQuestions: score, gamesPlayed: 1);
+        
         showDialog(
           context: context,
           builder: (_) => AlertDialog(

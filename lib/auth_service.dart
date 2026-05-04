@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
-  static const String baseUrl = "http://localhost:5000/api/users";
+  static const String baseUrl = "http://192.168.1.106:5000/api/users";
+  final _storage = const FlutterSecureStorage();
 
   Future<bool> register(String name, String email, String password) async {
     final res = await http.post(
@@ -27,25 +28,22 @@ class AuthService {
 
     if (res.statusCode == 200) {
       final data = jsonDecode(res.body);
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('token', data['token']);
-      await prefs.setString('userName', data['user']['name']);
-      await prefs.setString('userEmail', data['user']['email']);
+      await _storage.write(key: 'token', value: data['token']);
+      await _storage.write(key: 'userName', value: data['user']['name']);
+      await _storage.write(key: 'userEmail', value: data['user']['email']);
       return true;
     }
     return false;
   }
 
   Future<Map<String, String?>> getUserInfo() async {
-    final prefs = await SharedPreferences.getInstance();
     return {
-      'name': prefs.getString('userName'),
-      'email': prefs.getString('userEmail'),
+      'name': await _storage.read(key: 'userName'),
+      'email': await _storage.read(key: 'userEmail'),
     };
   }
 
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await _storage.deleteAll();
   }
 }

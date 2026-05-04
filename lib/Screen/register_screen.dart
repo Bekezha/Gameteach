@@ -1,32 +1,22 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
-class RegisterScreeen extends StatefulWidget {
-  const RegisterScreeen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreeen> createState() => _RegisterScreeenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreeenState extends State<RegisterScreeen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   final confirmpaswordController = TextEditingController();
   bool _isLoading = false;
-
-  Future<void> _saveUserLocally(
-    Map<String, dynamic> user,
-    String? token,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userName', user['name'] ?? '');
-    await prefs.setString('userEmail', user['email'] ?? '');
-    if (token != null) await prefs.setString('token', token);
-  }
+  String _selectedRole = 'student';
 
   Future<void> registerUser() async {
     final email = emailController.text.trim();
@@ -35,48 +25,33 @@ class _RegisterScreeenState extends State<RegisterScreeen> {
     final confirm = confirmpaswordController.text.trim();
 
     if (password != confirm) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Парольдер сәйкес емес")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Құпиясөздер сәйкес емес")));
       return;
     }
 
     setState(() => _isLoading = true);
 
-    final url = Uri.parse('http://localhost:5000/api/users/register');
-
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'name': name, 'email': email, 'password': password}),
-      );
+      final success = await context.read<UserProvider>().register(name, email, password, _selectedRole);
 
-      final data = jsonDecode(response.body);
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        // Если сервер вернул user, используем его; если вернул token — сохраняем тоже
-        final user =
-            data['user'] as Map<String, dynamic>? ??
-            {'name': name, 'email': email};
-        final token = data['token'] as String?;
-        await _saveUserLocally(user, token);
+      if (success && mounted) {
+        final loginSuccess = await context.read<UserProvider>().login(email, password);
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Тіркелу сәтті ✅")));
-
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
+        if (loginSuccess && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Тіркелу сәтті ✅")));
+          Navigator.pushReplacementNamed(context, '/home');
+        }
+      } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(data['message'] ?? 'Қате тіркелу')),
+          const SnackBar(content: Text('Қате тіркелу')),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Серверге қосылу сәтсіз: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Серверге қосылу сәтсіз: $e')));
+      }
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -138,6 +113,23 @@ class _RegisterScreeenState extends State<RegisterScreeen> {
                     icon: Icon(Icons.lock_outline),
                     labelText: "Құпиясөзді растау",
                   ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              FadeInLeft(
+                child: DropdownButtonFormField<String>(
+                  value: _selectedRole,
+                  decoration: const InputDecoration(
+                    icon: Icon(Icons.school),
+                    labelText: "Рөл",
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'student', child: Text("Оқушы")),
+                    DropdownMenuItem(value: 'teacher', child: Text("Мұғалім")),
+                  ],
+                  onChanged: (val) {
+                    if (val != null) setState(() => _selectedRole = val);
+                  },
                 ),
               ),
               const SizedBox(height: 24),

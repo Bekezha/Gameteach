@@ -3,12 +3,14 @@ class GameQuestion {
   final List<String> options;
   final String correctAnswer;
   final Map<String, String>? matchingPairs;
+  final Map<String, List<String>>? sortingCategories; // For Сортировка: {"Дикие": ["Тигр", "Слон"], "Домашние": ["Кот", "Собака"]}
 
   GameQuestion({
     required this.question,
     this.options = const [],
     this.correctAnswer = "",
     this.matchingPairs,
+    this.sortingCategories,
   });
 }
 
@@ -138,6 +140,70 @@ class GamesData {
       GameQuestion(question: "Собери предложение из слов:", options: ["Собака", "громко", "лает", "на", "кошку"], correctAnswer: "Собака громко лает на кошку"),
       GameQuestion(question: "Собери предложение из слов:", options: ["Рыба", "быстро", "плавает", "в", "реке"], correctAnswer: "Рыба быстро плавает в реке"),
       GameQuestion(question: "Собери предложение из слов:", options: ["Кот", "спит", "на", "мягком", "диване"], correctAnswer: "Кот спит на мягком диване"),
+    ],
+
+    // --- NEW GAMES ---
+
+    // Game 10: Сравнение (Math)
+    "Сравнение": [
+      GameQuestion(question: "12 ... 15", options: ["<", "=", ">"], correctAnswer: "<"),
+      GameQuestion(question: "20 ... 10", options: ["<", "=", ">"], correctAnswer: ">"),
+      GameQuestion(question: "5 + 5 ... 10", options: ["<", "=", ">"], correctAnswer: "="),
+      GameQuestion(question: "8 ... 3 + 4", options: ["<", "=", ">"], correctAnswer: ">"),
+      GameQuestion(question: "15 - 5 ... 12", options: ["<", "=", ">"], correctAnswer: "<"),
+      GameQuestion(question: "50 ... 50", options: ["<", "=", ">"], correctAnswer: "="),
+      GameQuestion(question: "9 + 2 ... 10", options: ["<", "=", ">"], correctAnswer: ">"),
+      GameQuestion(question: "100 / 2 ... 50", options: ["<", "=", ">"], correctAnswer: "="),
+      GameQuestion(question: "7 ... 9", options: ["<", "=", ">"], correctAnswer: "<"),
+      GameQuestion(question: "3 * 4 ... 15", options: ["<", "=", ">"], correctAnswer: "<"),
+    ],
+
+    // Game 11: Сортировка (Science/World)
+    "Сортировка": [
+      GameQuestion(question: "Дикие или домашние животные?", sortingCategories: {
+        "Дикие": ["Тигр", "Медведь", "Лев", "Заяц"],
+        "Домашние": ["Кот", "Собака", "Корова", "Лошадь"]
+      }),
+      GameQuestion(question: "Фрукты или овощи?", sortingCategories: {
+        "Фрукты": ["Яблоко", "Банан", "Слива", "Апельсин"],
+        "Овощи": ["Морковь", "Картофель", "Лук", "Капуста"]
+      }),
+      GameQuestion(question: "Транспорт или природа?", sortingCategories: {
+        "Транспорт": ["Машина", "Самолет", "Корабль", "Поезд"],
+        "Природа": ["Дерево", "Река", "Гора", "Цветок"]
+      }),
+      GameQuestion(question: "Съедобное или несъедобное?", sortingCategories: {
+        "Съедобное": ["Хлеб", "Сыр", "Пирог", "Суп"],
+        "Несъедобное": ["Камень", "Стол", "Дверь", "Окно"]
+      }),
+      GameQuestion(question: "Город или деревня?", sortingCategories: {
+        "Город": ["Парковка", "Светофор", "Трамвай", "Небоскреб"],
+        "Деревня": ["Колодец", "Сарай", "Телега", "Печь"]
+      }),
+    ],
+
+    // Game 12: Что лишнее? (Logic)
+    "Что лишнее": [
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Яблоко", "Груша", "Морковь", "Банан"], correctAnswer: "Морковь"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Собака", "Волк", "Лиса", "Медведь"], correctAnswer: "Собака"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Синий", "Красный", "Кислый", "Зеленый"], correctAnswer: "Кислый"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Стул", "Стол", "Шкаф", "Ковер"], correctAnswer: "Ковер"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Трамвай", "Поезд", "Автобус", "Лодка"], correctAnswer: "Лодка"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Зима", "Декабрь", "Январь", "Февраль"], correctAnswer: "Зима"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Клубника", "Малина", "Арбуз", "Земляника"], correctAnswer: "Арбуз"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Дождь", "Снег", "Град", "Солнце"], correctAnswer: "Солнце"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Брат", "Сестра", "Друг", "Дядя"], correctAnswer: "Друг"),
+      GameQuestion(question: "Какое слово здесь лишнее?", options: ["Книги", "Тетради", "Ручки", "Игрушки"], correctAnswer: "Игрушки"),
+    ],
+
+    // Game 13: Собери слово (Language)
+    // We will pass the scrambled letters in `options` and the correct word in `correctAnswer`.
+    "Собери слово": [
+      GameQuestion(question: "Составь слово: Домашнее животное", options: ["К", "О", "Ш", "К", "А"], correctAnswer: "КОШКА"),
+      GameQuestion(question: "Составь слово: Желтый фрукт", options: ["Л", "И", "М", "О", "Н"], correctAnswer: "ЛИМОН"),
+      GameQuestion(question: "Составь слово: Время года", options: ["В", "Е", "С", "Н", "А"], correctAnswer: "ВЕСНА"),
+      GameQuestion(question: "Составь слово: На нем спят", options: ["Д", "И", "В", "А", "Н"], correctAnswer: "ДИВАН"),
+      GameQuestion(question: "Составь слово: Утреннее светило", options: ["С", "О", "Л", "Н", "Ц", "Е"], correctAnswer: "СОЛНЦЕ"),
     ],
   };
 }

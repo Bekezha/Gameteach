@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -48,6 +50,8 @@ class _ConnectScreenState extends State<ConnectScreen>
             currentIndex++;
           });
         } else {
+          context.read<UserProvider>().updateStats(answeredQuestions: score, gamesPlayed: 1);
+          
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("Ойын аяқталды! Ұпай: $score / ${pairs.length}"),

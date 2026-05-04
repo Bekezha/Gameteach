@@ -1,29 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
 
-class HomeScreeen extends StatefulWidget {
-  const HomeScreeen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<HomeScreeen> createState() => _HomeScreeenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreeenState extends State<HomeScreeen> {
+class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  String? userName; // для приветствия
-
   @override
   void initState() {
     super.initState();
-    _loadUserName();
-  }
-
-  Future<void> _loadUserName() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      userName = prefs.getString('userName') ?? 'Gamer';
-    });
   }
 
   void _onItemTapped(int index) {
@@ -42,6 +33,9 @@ class _HomeScreeenState extends State<HomeScreeen> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+    final userName = userProvider.user?.name ?? 'Ойыншы';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Басты бет'),
@@ -69,7 +63,7 @@ class _HomeScreeenState extends State<HomeScreeen> {
                   child: Column(
                     children: [
                       Text(
-                        "Сәлем, ${userName ?? 'Ойыншы'} 👋",
+                        "Сәлем, $userName 👋",
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -87,6 +81,19 @@ class _HomeScreeenState extends State<HomeScreeen> {
                         ),
                         child: const Text('Қосымшамен танысу'),
                       ),
+                      if (userProvider.user?.role == 'teacher') ...[
+                        const SizedBox(height: 12),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/create-game');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.amber,
+                            foregroundColor: Colors.black,
+                          ),
+                          child: const Text('Өз ойыныңды жасау (Создать свою игру)'),
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/user_provider.dart';
 
 class VictorinaScreen extends StatefulWidget {
   const VictorinaScreen({super.key});
@@ -128,6 +130,8 @@ class _VictorinaScreenState extends State<VictorinaScreen> {
   }
 
   void showResultDialog() {
+    context.read<UserProvider>().updateStats(answeredQuestions: score, gamesPlayed: 1);
+    
     showDialog(
       context: context,
       barrierDismissible: false,

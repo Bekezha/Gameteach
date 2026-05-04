@@ -3,26 +3,55 @@ import 'package:animate_do/animate_do.dart';
 import 'dart:async';
 import 'dart:math';
 import 'games_data.dart';
+import 'package:provider/provider.dart';
+import '../providers/user_provider.dart';
+import '../Game/AnimatedGames/space_lab_game.dart';
+import '../Game/AnimatedGames/firefly_math_game.dart';
+import '../Game/AnimatedGames/word_catcher_game.dart';
+import '../Game/AnimatedGames/time_machine_game.dart';
 
 class Games extends StatefulWidget {
-  const Games({super.key});
+  final String? subjectTitle;
+  final List<String>? allowedGames;
+
+  const Games({super.key, this.subjectTitle, this.allowedGames});
 
   @override
   State<Games> createState() => _GamesState();
 }
 
 class _GamesState extends State<Games> {
-  final List<Map<String, String>> gamesList = [
-    {"title": "Цифры", "image": "assets/images/play1.jpg"},
-    {"title": "Выбери правильный ответ", "image": "assets/images/play2.jpg"},
-    {"title": "Быстрый ответ", "image": "assets/images/play3.jpg"},
-    {"title": "Связывание", "image": "assets/images/play4.jpg"},
-    {"title": "Логический ответ", "image": "assets/images/play5.jpg"},
-    {"title": "Правда или ложь", "image": "assets/images/play6.jpg"},
-    {"title": "Реши загадку", "image": "assets/images/play7.jpg"},
-    {"title": "Найди ошибку", "image": "assets/images/play8.jpg"},
-    {"title": "Составь пазл", "image": "assets/images/play9.jpg"},
-  ];
+  late List<Map<String, dynamic>> gamesList;
+
+  @override
+  void initState() {
+    super.initState();
+    final allGames = [
+      {"title": "Цифры", "image": "assets/images/play1.jpg"},
+      {"title": "Выбери правильный ответ", "image": "assets/images/play2.jpg"},
+      {"title": "Быстрый ответ", "image": "assets/images/play3.jpg"},
+      {"title": "Связывание", "image": "assets/images/play4.jpg"},
+      {"title": "Логический ответ", "image": "assets/images/play5.jpg"},
+      {"title": "Правда или ложь", "image": "assets/images/play6.jpg"},
+      {"title": "Реши загадку", "image": "assets/images/play7.jpg"},
+      {"title": "Найди ошибку", "image": "assets/images/play8.jpg"},
+      {"title": "Составь пазл", "image": "assets/images/play9.jpg"},
+      {"title": "Сравнение", "image": "assets/images/play1.jpg"},
+      {"title": "Сортировка", "image": "assets/images/play2.jpg"},
+      {"title": "Что лишнее", "image": "assets/images/play3.jpg"},
+      {"title": "Собери слово", "image": "assets/images/play4.jpg"},
+      {"title": "Космическая лаб.", "image": "assets/images/play1.jpg", "route": "SpaceLab"},
+      {"title": "Магический лес", "image": "assets/images/play2.jpg", "route": "FireflyMath"},
+      {"title": "Ловец слов", "image": "assets/images/play3.jpg", "route": "WordCatcher"},
+      {"title": "Машина времени", "image": "assets/images/play4.jpg", "route": "TimeMachine"},
+    ];
+
+    if (widget.allowedGames != null) {
+      gamesList = allGames.where((game) => widget.allowedGames!.contains(game['title'])).toList();
+    } else {
+      gamesList = allGames;
+    }
+  }
 
   String? activeGame;
   int currentQuestionIndex = 0;
@@ -42,6 +71,13 @@ class _GamesState extends State<Games> {
 
   List<String> availablePuzzleWords = [];
   List<String> selectedPuzzleWords = [];
+
+  // NEW GAMES STATE
+  int currentSortingItemIndex = 0;
+  List<MapEntry<String, String>> sortingItems = [];
+
+  List<String> availableWordLetters = [];
+  List<String> selectedWordLetters = [];
 
   @override
   void dispose() {
@@ -75,6 +111,18 @@ class _GamesState extends State<Games> {
     } else if (title == "Составь пазл") {
       availablePuzzleWords = List.from(q.options)..shuffle(Random());
       selectedPuzzleWords.clear();
+    } else if (title == "Сортировка") {
+      sortingItems.clear();
+      currentSortingItemIndex = 0;
+      q.sortingCategories?.forEach((category, items) {
+        for (var item in items) {
+          sortingItems.add(MapEntry(item, category));
+        }
+      });
+      sortingItems.shuffle(Random());
+    } else if (title == "Собери слово") {
+      availableWordLetters = List.from(q.options)..shuffle(Random());
+      selectedWordLetters.clear();
     }
   }
 
@@ -130,6 +178,7 @@ class _GamesState extends State<Games> {
           _startTimerIfNeeded(activeGame!);
         } else {
           isGameOver = true;
+          context.read<UserProvider>().updateStats(answeredQuestions: correctAnswers, gamesPlayed: 1);
         }
       });
     });
@@ -417,6 +466,154 @@ class _GamesState extends State<Games> {
     );
   }
 
+  Widget _buildSortingGame(GameQuestion q) {
+    if (sortingItems.isEmpty || currentSortingItemIndex >= sortingItems.length) return const SizedBox();
+    
+    var currentItem = sortingItems[currentSortingItemIndex];
+    List<String> categories = q.sortingCategories!.keys.toList();
+    
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.amber, width: 3),
+          ),
+          child: Text(
+            currentItem.key,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(height: 40),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: categories.map((category) {
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: feedback.isNotEmpty ? null : () {
+                    if (category == currentItem.value) {
+                      setState(() {
+                         feedback = "Правильно!";
+                      });
+                      Future.delayed(const Duration(milliseconds: 1000), () {
+                        if (!mounted) return;
+                        setState(() {
+                          feedback = "";
+                          currentSortingItemIndex++;
+                          if (currentSortingItemIndex >= sortingItems.length) {
+                             checkAnswer(true);
+                          }
+                        });
+                      });
+                    } else {
+                       setState(() {
+                         feedback = "Неправильно!";
+                       });
+                       Future.delayed(const Duration(milliseconds: 1500), () {
+                         if (!mounted) return;
+                         setState(() {
+                           feedback = "";
+                         });
+                       });
+                    }
+                  },
+                  child: Text(category, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+                ),
+              ),
+            );
+          }).toList(),
+        )
+      ],
+    );
+  }
+
+  Widget _buildWordBuilderGame(GameQuestion q) {
+    return Column(
+      children: [
+        Container(
+          constraints: const BoxConstraints(minHeight: 80),
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Theme.of(context).primaryColor, width: 2),
+          ),
+          child: selectedWordLetters.isEmpty 
+              ? const Center(child: Text("Собери слово...", style: TextStyle(color: Colors.grey, fontSize: 16)))
+              : Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: selectedWordLetters.map((letter) {
+                    return GestureDetector(
+                      onTap: () {
+                        if (feedback.isNotEmpty) return;
+                        setState(() {
+                          selectedWordLetters.remove(letter);
+                          availableWordLetters.add(letter);
+                        });
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(letter, style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+        ),
+        const SizedBox(height: 30),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          alignment: WrapAlignment.center,
+          children: availableWordLetters.map((letter) {
+            return GestureDetector(
+              onTap: () {
+                if (feedback.isNotEmpty) return;
+                setState(() {
+                  availableWordLetters.remove(letter);
+                  selectedWordLetters.add(letter);
+                  
+                  if (availableWordLetters.isEmpty) {
+                    String formedWord = selectedWordLetters.join("");
+                    checkAnswer(formedWord == q.correctAnswer);
+                  }
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                ),
+                child: Text(
+                  letter,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
   Widget _buildGameContent(String title, GameQuestion q) {
     switch (title) {
       case "Цифры":
@@ -446,6 +643,14 @@ class _GamesState extends State<Games> {
         return _buildFindMistakeGame(q);
       case "Составь пазл":
         return _buildSentencePuzzleGame(q);
+      case "Сравнение":
+        return _buildOptionsButtons(q.options, q.correctAnswer, crossAxisCount: 3, childAspectRatio: 1.5);
+      case "Сортировка":
+        return _buildSortingGame(q);
+      case "Что лишнее":
+        return _buildOptionsButtons(q.options, q.correctAnswer, crossAxisCount: 2, childAspectRatio: 2.0);
+      case "Собери слово":
+        return _buildWordBuilderGame(q);
       default:
         return const Text("Игра в разработке");
     }
@@ -551,7 +756,7 @@ class _GamesState extends State<Games> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8EFFF),
       appBar: AppBar(
-        title: const Text("Обучающие игры", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(widget.subjectTitle ?? "Обучающие игры", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 0,
         centerTitle: true,
@@ -579,7 +784,21 @@ class _GamesState extends State<Games> {
                   return FadeInUp(
                     delay: Duration(milliseconds: 100 * (index % 5)),
                     child: GestureDetector(
-                      onTap: () => startGame(game['title']!),
+                      onTap: () {
+                        if (game.containsKey('route')) {
+                          Widget selectedScreen;
+                          switch (game['route']) {
+                            case 'SpaceLab': selectedScreen = const SpaceLabGame(); break;
+                            case 'FireflyMath': selectedScreen = const FireflyMathGame(); break;
+                            case 'WordCatcher': selectedScreen = const WordCatcherGame(); break;
+                            case 'TimeMachine': selectedScreen = const TimeMachineGame(); break;
+                            default: return;
+                          }
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => selectedScreen));
+                        } else {
+                          startGame(game['title'] as String);
+                        }
+                      },
                       child: Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -591,7 +810,7 @@ class _GamesState extends State<Games> {
                               child: ClipRRect(
                                 borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                                 child: Image.asset(
-                                  game['image']!,
+                                  game['image'] as String,
                                   width: double.infinity,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
