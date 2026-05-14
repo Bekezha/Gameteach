@@ -1,0 +1,18 @@
+# Render Blueprint. On first connect choose to apply this file if prompted.
+# MONGO_URI and JWT_SECRET: set in Dashboard (sync: false).
+services:
+  - type: web
+    name: gameteach
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    rootDir: lib/server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false

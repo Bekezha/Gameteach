@@ -22,6 +22,10 @@ git remote set-url origin https://github.com/Bekezha/Gameteach.git
 git push -u origin main
 ```
 
+### Render (API)
+
+В корне репозитория есть [render.yaml](render.yaml): Node, каталог `lib/server`, `npm install` / `npm start`, проверка **`GET /health`**. Секреты **`MONGO_URI`** и **`JWT_SECRET`** по-прежнему задаёте только вы в дашборде Render (или при первом применении Blueprint). Регион в файле — `frankfurt`; при необходимости замените на другой из списка Render.
+
 ### Сборка APK на GitHub Actions
 
 После пуша в ветку `main` или `master` запускается workflow [Android release APK](.github/workflows/android-build.yml). Во вкладке **Actions** откройте успешный запуск → раздел **Artifacts** → скачайте **app-release-apk** (файл `app-release.apk`). Его можно установить на Android (разрешите установку из неизвестных источников для этого файла).
