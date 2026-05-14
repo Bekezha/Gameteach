@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'profile_model.dart';
 
 class ProfileService {
-  static const String baseUrl = 'http://192.168.1.106:5000';
+  static const String baseUrl = 'https://gameteach-32zy.onrender.com';
 
   Future<ProfileModel?> getProfile() async {
     final prefs = await SharedPreferences.getInstance();

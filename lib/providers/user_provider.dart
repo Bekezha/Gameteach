@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
   bool get isAuthenticated => _token != null;
 
   final _storage = const FlutterSecureStorage();
-  String get baseUrl => dotenv.env['API_URL'] ?? 'http://192.168.1.106:5000/api/users';
+  String get baseUrl => dotenv.env['API_URL'] ?? 'https://gameteach-32zy.onrender.com/api/users';
 
   Future<void> init() async {
     _token = await _storage.read(key: 'jwt_token');

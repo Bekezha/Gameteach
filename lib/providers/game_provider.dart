@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class GameProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
-  String get baseUrl => dotenv.env['API_URL']?.replaceFirst('/users', '/games') ?? 'http://192.168.1.106:5000/api/games';
+  String get baseUrl => dotenv.env['API_URL']?.replaceFirst('/users', '/games') ?? 'https://gameteach-32zy.onrender.com/api/games';
 
   Future<bool> createGame(String title, List<Map<String, dynamic>> questions) async {
     final token = await _storage.read(key: 'jwt_token');
