@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+
 import 'package:provider/provider.dart';
 import 'providers/user_provider.dart';
 
@@ -45,6 +45,7 @@ class _ConnectScreenState extends State<ConnectScreen>
       score++;
       drawLine(index);
       Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
         if (currentIndex < pairs.length - 1) {
           setState(() {
             currentIndex++;

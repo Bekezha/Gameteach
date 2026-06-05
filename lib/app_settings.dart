@@ -8,9 +8,7 @@ class AppSettings extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   Locale get locale => _locale;
 
-  AppSettings() {
-    _loadSettings();
-  }
+  AppSettings();
 
   void toggleTheme(bool isDark) async {
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
@@ -28,7 +26,7 @@ class AppSettings extends ChangeNotifier {
     await prefs.setString('language', langCode);
   }
 
-  Future<void> _loadSettings() async {
+  Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
 
     final isDark = prefs.getBool('isDark') ?? false;

@@ -79,7 +79,7 @@ class GamesBySubjectScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       gradient: LinearGradient(
                         colors: [
-                          subject['color'].withOpacity(0.8),
+                          subject['color'].withValues(alpha: 0.8),
                           subject['color'],
                         ],
                         begin: Alignment.topLeft,
@@ -91,7 +91,7 @@ class GamesBySubjectScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(subject['icon'], size: 40, color: Colors.white),

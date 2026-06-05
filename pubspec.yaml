@@ -46,6 +46,7 @@ dependencies:
   animate_do: ^4.2.0
   flutter_secure_storage: ^10.0.0
   flutter_dotenv: ^6.0.0
+  socket_io_client: ^3.0.2
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   test: ^1.24.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.10
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,7 +70,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
+    - assets/images/logo.png
     - assets/images/game1.jpg
     - assets/images/game2.jpg
     - assets/images/game3.jpg
@@ -81,6 +84,7 @@ flutter:
     - assets/images/play7.jpg
     - assets/images/play8.jpg
     - assets/images/play9.jpg
+    - assets/images/levels/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -107,3 +111,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: "assets/images/logo.png"
+  android: true
+  ios: true

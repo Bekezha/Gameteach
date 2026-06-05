@@ -195,7 +195,7 @@ class _GamesState extends State<Games> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                 foregroundColor: Theme.of(context).primaryColor,
                 elevation: 0,
               ),
@@ -216,7 +216,7 @@ class _GamesState extends State<Games> {
         children: options.map((option) => ElevatedButton(
           style: ElevatedButton.styleFrom(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+            backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             foregroundColor: Theme.of(context).primaryColor,
             elevation: 0,
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8)
@@ -298,7 +298,7 @@ class _GamesState extends State<Games> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: isMatched 
-                          ? Colors.green.withOpacity(0.3) 
+                          ? Colors.green.withValues(alpha: 0.3) 
                           : isSelected ? Theme.of(context).colorScheme.secondary : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: isSelected ? Colors.amber : Colors.grey.shade300, width: 2),
@@ -349,7 +349,7 @@ class _GamesState extends State<Games> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isMatched ? Colors.green.withOpacity(0.3) : Colors.white,
+                      color: isMatched ? Colors.green.withValues(alpha: 0.3) : Colors.white,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: Colors.grey.shade300, width: 2),
                     ),
@@ -450,9 +450,9 @@ class _GamesState extends State<Games> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   word,
@@ -598,9 +598,9 @@ class _GamesState extends State<Games> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.3)),
+                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   letter,
@@ -815,7 +815,7 @@ class _GamesState extends State<Games> {
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
-                                      color: Colors.grey[300],
+                                      color: Colors.white.withValues(alpha: 0.1),
                                       child: const Icon(Icons.videogame_asset, size: 50, color: Colors.blueGrey),
                                     );
                                   },

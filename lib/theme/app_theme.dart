@@ -22,7 +22,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: accentColor,
         surface: Colors.white,
-        background: backgroundColorLight,
       ),
       textTheme: GoogleFonts.nunitoTextTheme().apply(
         bodyColor: textLight,
@@ -33,10 +32,18 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: GoogleFonts.nunito(
+        titleTextStyle: GoogleFonts.comicNeue(
           color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.2,
+          shadows: [
+            const Shadow(
+              offset: Offset(2.0, 2.0),
+              blurRadius: 4.0,
+              color: Color(0xFF6C2B8E), // Text shadow mapping to primaryColor
+            ),
+          ],
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -111,7 +118,6 @@ class AppTheme {
         primary: accentColor,
         secondary: accentColor,
         surface: const Color(0xFF2D1E36),
-        background: backgroundColorDark,
       ),
       textTheme: GoogleFonts.nunitoTextTheme(ThemeData.dark().textTheme).apply(
         bodyColor: textDark,
@@ -122,10 +128,18 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: GoogleFonts.nunito(
+        titleTextStyle: GoogleFonts.comicNeue(
           color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.2,
+          shadows: [
+            const Shadow(
+              offset: Offset(2.0, 2.0),
+              blurRadius: 4.0,
+              color: Color(0xFFBF58D1), // accentColor for dark theme shadow
+            ),
+          ],
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(

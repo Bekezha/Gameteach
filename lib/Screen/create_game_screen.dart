@@ -126,18 +126,20 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                                     decoration: const InputDecoration(labelText: 'Текст вопроса'),
                                   ),
                                   const SizedBox(height: 10),
-                                  _buildOptionField(_questions[index].optAController, 'Вариант A', 'A', _questions[index], () {
-                                    setState(() => _questions[index].correctOption = 'A');
-                                  }),
-                                  _buildOptionField(_questions[index].optBController, 'Вариант B', 'B', _questions[index], () {
-                                    setState(() => _questions[index].correctOption = 'B');
-                                  }),
-                                  _buildOptionField(_questions[index].optCController, 'Вариант C', 'C', _questions[index], () {
-                                    setState(() => _questions[index].correctOption = 'C');
-                                  }),
-                                  _buildOptionField(_questions[index].optDController, 'Вариант D', 'D', _questions[index], () {
-                                    setState(() => _questions[index].correctOption = 'D');
-                                  }),
+                                  RadioGroup<String>(
+                                    groupValue: _questions[index].correctOption,
+                                    onChanged: (val) {
+                                      setState(() => _questions[index].correctOption = val);
+                                    },
+                                    child: Column(
+                                      children: [
+                                        _buildOptionField(_questions[index].optAController, 'Вариант A', 'A'),
+                                        _buildOptionField(_questions[index].optBController, 'Вариант B', 'B'),
+                                        _buildOptionField(_questions[index].optCController, 'Вариант C', 'C'),
+                                        _buildOptionField(_questions[index].optDController, 'Вариант D', 'D'),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -178,13 +180,11 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
     );
   }
 
-  Widget _buildOptionField(TextEditingController controller, String label, String value, QuestionInputData data, VoidCallback onRadioTapped) {
+  Widget _buildOptionField(TextEditingController controller, String label, String value) {
     return Row(
       children: [
         Radio<String>(
           value: value,
-          groupValue: data.correctOption,
-          onChanged: (val) => onRadioTapped(),
         ),
         Expanded(
           child: TextField(

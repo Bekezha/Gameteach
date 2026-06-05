@@ -62,7 +62,7 @@ class _SettingsState extends State<Settings> {
                   decoration: const InputDecoration(
                     labelText: "Тілді таңдаңыз",
                   ),
-                  value: _selectedLanguage,
+                  initialValue: _selectedLanguage,
                   items: _languages.map((lang) {
                     return DropdownMenuItem<String>(
                       value: lang,
@@ -70,13 +70,15 @@ class _SettingsState extends State<Settings> {
                     );
                   }).toList(),
                   onChanged: (value) async {
+                    if (value == null) return;
                     setState(() {
-                      _selectedLanguage = value!;
+                      _selectedLanguage = value;
                     });
                     await _saveSettings();
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Тіл "${value}" таңдалды!'),
+                        content: Text('Тіл "$value" таңдалды!'),
                         duration: const Duration(seconds: 2),
                       ),
                     );
@@ -97,12 +99,13 @@ class _SettingsState extends State<Settings> {
                   contentPadding: EdgeInsets.zero,
                   title: const Text("Қараңғы режим"),
                   value: _isDarkMode,
-                  activeColor: Theme.of(context).primaryColor,
+                  activeThumbColor: Theme.of(context).primaryColor,
                   onChanged: (value) async {
                     setState(() {
                       _isDarkMode = value;
                     });
                     await _saveSettings();
+                    if (!context.mounted) return;
                     // Optional: update provider settings to reflect immediately
                     Provider.of<AppSettings>(context, listen: false).toggleTheme(value);
                     

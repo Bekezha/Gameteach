@@ -29,7 +29,7 @@ class ProfileService {
           return profile;
         }
       } catch (e) {
-        print("Error fetching profile from server: $e");
+        // debugPrint("Error fetching profile from server: $e");
       }
     }
 
@@ -61,7 +61,7 @@ class ProfileService {
           }),
         );
       } catch (e) {
-        print("Error updating stats: $e");
+        // debugPrint("Error updating stats: $e");
       }
     }
   }
@@ -82,7 +82,7 @@ class ProfileService {
           return data.map((json) => ProfileModel.fromJson(json)).toList();
         }
       } catch (e) {
-        print("Error fetching leaderboard: $e");
+        // debugPrint("Error fetching leaderboard: $e");
       }
     }
     return [];

@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 class GameProvider extends ChangeNotifier {
   final _storage = const FlutterSecureStorage();
-  String get baseUrl => dotenv.env['API_URL']?.replaceFirst('/users', '/games') ?? 'https://gameteach-32zy.onrender.com/api/games';
+  String get baseUrl => 'https://gameteach-32zy.onrender.com/api/games';
 
   Future<bool> createGame(String title, List<Map<String, dynamic>> questions) async {
     final token = await _storage.read(key: 'jwt_token');
@@ -54,6 +54,29 @@ class GameProvider extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint("Fetch games error: $e");
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> fetchMyGames() async {
+    final token = await _storage.read(key: 'jwt_token');
+    if (token == null) return [];
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/my-games'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        debugPrint("Error fetching my games: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("Fetch my games error: $e");
     }
     return [];
   }

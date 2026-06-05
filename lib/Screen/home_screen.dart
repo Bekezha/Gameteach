@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 6),
                       ),
@@ -83,15 +83,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       if (userProvider.user?.role == 'teacher') ...[
                         const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/create-game');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber,
-                            foregroundColor: Colors.black,
-                          ),
-                          child: const Text('Өз ойыныңды жасау (Создать свою игру)'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/create-game');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.amber,
+                                  foregroundColor: Colors.black,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                ),
+                                child: const Text('Ойын жасау', textAlign: TextAlign.center),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/my-games');
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white24,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  side: const BorderSide(color: Colors.white54),
+                                ),
+                                child: const Text('Менің ойындарым', textAlign: TextAlign.center),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ],
@@ -147,6 +169,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 20),
+              FadeInUp(
+                delay: const Duration(milliseconds: 400),
+                child: _buildBigActionCard(
+                  context,
+                  "Дуэль (Real-time)",
+                  "Соперникпен білім сынасу",
+                  Icons.bolt,
+                  Colors.orangeAccent,
+                  '/duel-lobby',
+                ),
+              ),
             ],
           ),
         ),
@@ -165,35 +199,64 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildGameCard(BuildContext context, String title, String imagePath, String route) {
+    // ... code for _buildGameCard
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamed(context, route);
-      },
+      onTap: () => Navigator.pushNamed(context, route),
       child: Card(
-        margin: EdgeInsets.zero,
+        // ... grid item ui
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  imagePath,
-                  height: 60,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                child: Image.asset(imagePath, height: 60, width: double.infinity, fit: BoxFit.cover),
               ),
               const SizedBox(height: 8),
               Text(
-                title,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                title, 
+                textAlign: TextAlign.center, 
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBigActionCard(BuildContext context, String title, String subtitle, IconData icon, Color color, String route) {
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: color,
+              child: Icon(icon, color: Colors.white, size: 30),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(subtitle, style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, color: Colors.white70, size: 18),
+          ],
         ),
       ),
     );

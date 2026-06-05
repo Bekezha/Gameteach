@@ -1,182 +1,270 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../providers/user_provider.dart';
 
 class WordCatcherGame extends StatefulWidget {
-  const WordCatcherGame({Key? key}) : super(key: key);
+  const WordCatcherGame({super.key});
 
   @override
   State<WordCatcherGame> createState() => _WordCatcherGameState();
 }
 
-class _WordCatcherGameState extends State<WordCatcherGame> with TickerProviderStateMixin {
-  final List<String> _letters = ["Т", "М", "К", "Р", "О", "С", "Л", "В", "А"];
-  final List<int> _targetSequence = [2, 4, 0]; // К, О, Т
-  
-  List<int> _selectedIndexes = [];
-  bool _isWordComplete = false;
+class WordTask {
+  final String question;
+  final String answer;
+  final List<String> letters;
 
-  void _onLetterTap(int index) {
-    if (_isWordComplete) return;
+  WordTask({required this.question, required this.answer, required this.letters});
+}
+
+class _WordCatcherGameState extends State<WordCatcherGame> {
+  final List<WordTask> _tasks = [
+    WordTask(
+      question: "Ең үлкен планета?",
+      answer: "ЮПИТЕР",
+      letters: ["Ю", "П", "И", "Т", "Е", "Р", "А", "Б", "С"],
+    ),
+    WordTask(
+      question: "Судың химиялық формуласы?",
+      answer: "АШЕКІО",
+      letters: ["А", "Ш", "Е", "К", "І", "О", "В", "Г", "Д"],
+    ),
+    WordTask(
+      question: "Қазақстанның астанасы?",
+      answer: "АСТАНА",
+      letters: ["А", "С", "Т", "А", "Н", "А", "Л", "М", "Ы"],
+    ),
+    WordTask(
+      question: "Күн жүйесінің орталығы?",
+      answer: "КҮН",
+      letters: ["К", "Ү", "Н", "Ж", "Ұ", "Л", "Д", "Ы", "З"],
+    ),
+    WordTask(
+      question: "Білім ордасы?",
+      answer: "МЕКТЕП",
+      letters: ["М", "Е", "К", "Т", "Е", "П", "К", "І", "Т"],
+    ),
+    WordTask(
+       question: "Қазақ тілінде неше әріп бар?",
+       answer: "ҚЫРЫҚЕКІ",
+       letters: ["Қ", "Ы", "Р", "Ы", "Қ", "Е", "К", "І", "О"],
+    ),
+    WordTask(
+       question: "Ең биік тау?",
+       answer: "ЭВЕРЕСТ",
+       letters: ["Э", "В", "Е", "Р", "Е", "С", "Т", "А", "У"],
+    ),
+    WordTask(
+       question: "Жердің серігі?",
+       answer: "АЙ",
+       letters: ["А", "Й", "К", "Ү", "Н", "Ж", "Ұ", "Л", "Д"],
+    ),
+  ];
+
+  int _currentTaskIndex = 0;
+  List<int> _selectedIndices = [];
+  bool _isSolved = false;
+
+  void _onLetterSelect(int index) {
+    if (_isSolved) return;
 
     setState(() {
-      // If we clicked the correct next letter in sequence
-      if (_selectedIndexes.length < _targetSequence.length &&
-          _targetSequence[_selectedIndexes.length] == index) {
-        _selectedIndexes.add(index);
-
-        if (_selectedIndexes.length == _targetSequence.length) {
-          _isWordComplete = true; // "КОТ" is formed
+      if (_selectedIndices.contains(index)) {
+        if (_selectedIndices.last == index) {
+          _selectedIndices.removeLast();
         }
       } else {
-        // Wrong letter, reset
-        _selectedIndexes.clear();
+        _selectedIndices.add(index);
+      }
+
+      String currentWord = _selectedIndices
+          .map((i) => _tasks[_currentTaskIndex].letters[i])
+          .join();
+
+      if (currentWord == _tasks[_currentTaskIndex].answer) {
+        _isSolved = true;
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _showWowAnimation();
+        });
+      } else if (currentWord.length >= _tasks[_currentTaskIndex].answer.length) {
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (!_isSolved) {
+            setState(() {
+              _selectedIndices = [];
+            });
+          }
+        });
       }
     });
   }
 
+  void _showWowAnimation() {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.8),
+      builder: (context) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "WOW!",
+              style: TextStyle(
+                color: Colors.yellowAccent,
+                fontSize: 80,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "КЕРЕМЕТ!",
+              style: TextStyle(color: Colors.white, fontSize: 30),
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                _nextTask();
+              },
+              child: const Text("Келесі сөз", style: TextStyle(color: Colors.black, fontSize: 18)),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _nextTask() {
+    setState(() {
+      if (_currentTaskIndex < _tasks.length - 1) {
+        _currentTaskIndex++;
+        _selectedIndices = [];
+        _isSolved = false;
+      } else {
+        _showFinalResult();
+      }
+    });
+  }
+
+  void _showFinalResult() {
+    context.read<UserProvider>().updateStats(answeredQuestions: _tasks.length, gamesPlayed: 1);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Ойын аяқталды!"),
+        content: const Text("Сіз барлық сөздерді таптыңыз!"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text("Мәзірге"),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_tasks.isEmpty) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    
+    final task = _tasks[_currentTaskIndex % _tasks.length];
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xFF0F2027),
       appBar: AppBar(
         title: const Text("Ловец слов", style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF2b5876), Color(0xFF4e4376)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              task.question,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Собери слово: КОТ (нажимай по порядку)",
-                style: TextStyle(color: Colors.white70, fontSize: 18),
-              ),
-              const SizedBox(height: 50),
-              
-              // Morphing Area
-              SizedBox(
-                height: 150,
-                child: Center(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 800),
-                    transitionBuilder: (Widget child, Animation<double> animation) {
-                      return ScaleTransition(scale: animation, child: FadeTransition(opacity: animation, child: child));
-                    },
-                    child: _isWordComplete
-                        ? _buildFinalMorphIcon()
-                        : _buildCurrentWord(),
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 50),
-              
-              // Grid of Letters
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                  ),
-                  itemCount: _letters.length,
-                  itemBuilder: (context, index) {
-                    final isSelected = _selectedIndexes.contains(index);
-                    return GestureDetector(
-                      onTap: () => _onLetterTap(index),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.pinkAccent : Colors.white24,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: isSelected
-                              ? [const BoxShadow(color: Colors.pink, blurRadius: 15, spreadRadius: 5)]
-                              : [],
-                          border: Border.all(color: Colors.white54, width: 2),
-                        ),
-                        child: Center(
-                          child: Text(
-                            _letters[index],
-                            style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.white70,
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              
-              const SizedBox(height: 40),
-              
-              if (_isWordComplete)
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amberAccent,
-                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _selectedIndexes.clear();
-                      _isWordComplete = false;
-                    });
-                  },
-                  child: const Text("Искать дальше", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-            ],
-          ),
-        ),
+          const Spacer(),
+          _buildLetterGrid(task),
+          const Spacer(),
+          _buildSelectedWord(task),
+          const SizedBox(height: 50),
+        ],
       ),
     );
   }
 
-  Widget _buildCurrentWord() {
-    String currentWord = "";
-    for (int i in _selectedIndexes) {
-      currentWord += _letters[i];
-    }
-    
-    return Text(
-      currentWord.isEmpty ? "..." : currentWord,
-      key: const ValueKey("text"),
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 48,
-        fontWeight: FontWeight.bold,
-        letterSpacing: 8,
-      ),
-    );
-  }
-
-  Widget _buildFinalMorphIcon() {
+  Widget _buildLetterGrid(WordTask task) {
     return Container(
-      key: const ValueKey("icon"),
-      width: 120,
-      height: 120,
-      decoration: BoxDecoration(
-        color: Colors.pinkAccent.withOpacity(0.3),
-        shape: BoxShape.circle,
-        boxShadow: const [
-          BoxShadow(color: Colors.pinkAccent, blurRadius: 40, spreadRadius: 10)
-        ]
+      padding: const EdgeInsets.all(20),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+        ),
+        itemCount: task.letters.length,
+        itemBuilder: (context, index) {
+          bool isSelected = _selectedIndices.contains(index);
+          return GestureDetector(
+            onTap: () => _onLetterSelect(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.orangeAccent : Colors.white10,
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: isSelected ? Colors.white : Colors.white24,
+                  width: 2,
+                ),
+                boxShadow: isSelected ? [
+                  const BoxShadow(color: Colors.orange, blurRadius: 10, spreadRadius: 2)
+                ] : [],
+              ),
+              child: Center(
+                child: Text(
+                  task.letters[index],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
-      child: const Center(
-        child: Icon(Icons.pets, size: 80, color: Colors.white),
+    );
+  }
+
+  Widget _buildSelectedWord(WordTask task) {
+    String currentWord = _selectedIndices.map((i) => task.letters[i]).join();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.white12,
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Text(
+        currentWord.isEmpty ? "..." : currentWord,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 36,
+          letterSpacing: 4,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
